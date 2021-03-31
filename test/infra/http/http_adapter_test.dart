@@ -19,7 +19,8 @@ class HttpAdapter {
       'content-type': 'application/json',
       'accept': 'application/json',
     };
-    await client.post(url, headers: headers, body: jsonEncode(body));
+    final jsonBody = body !=null ? jsonEncode(body) : null;
+    await client.post(url, headers: headers, body: jsonBody);
   }
 }
 
@@ -36,17 +37,28 @@ void main() {
      url = faker.internet.httpUrl();
   });
 
-  group('post', () {
+  group('post', ()
+  {
     test('Should call post with correct values', () async {
-      await sut.request(url: url, method: 'post', body: {'any_key': 'any_value'});
+      await sut.request(
+          url: url, method: 'post', body: {'any_key': 'any_value'});
 
       verify(client.post(
-        url,
-        headers:{
-          'content-type': 'application/json',
-          'accept': 'application/json',
-        },
-        body: '{"any_key":"any_value"}'
+          url,
+          headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json',
+          },
+          body: '{"any_key":"any_value"}'
+      ));
+    });
+
+    test('Should call post without correct values', () async {
+      await sut.request(url: url, method: 'post');
+
+      verify(client.post(
+          any,
+          headers: anyNamed('headers')
       ));
     });
   });
