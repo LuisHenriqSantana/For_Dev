@@ -22,7 +22,11 @@ void main() {
      params = AuthenticationParams(
         email: faker.internet.email(), secret: faker.internet.password());
   });
+
+
   test('Should call HttpClient with correct values', () async {
+    when(httpClient.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
+        .thenAnswer((_) async => {'accessToken': faker.guid.guid(), 'name': faker.person.name()});
     await sut.auth(params);
 
     verify(httpClient.request(
