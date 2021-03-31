@@ -36,7 +36,6 @@ void main() {
      url = faker.internet.httpUrl();
   });
 
-
   group('post', () {
     test('Should call post with correct values', () async {
       await sut.request(url: url, method: 'post', body: {'any_key': 'any_value'});
