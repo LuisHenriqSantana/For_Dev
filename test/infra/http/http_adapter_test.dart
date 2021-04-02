@@ -63,7 +63,6 @@ void main() {
     });
 
     test('Should return data if post returns 200', () async {
-      final response = await sut.request(url: url, method: 'post');
 
       return {'any_key': 'any_value'};
     });
