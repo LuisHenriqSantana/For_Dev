@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:for_dev/ui/components/components.dart';
 
-
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -11,7 +10,9 @@ class LoginPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             LoginHeader(),
-            Headline1(text: 'Login',),
+            Headline1(
+              text: 'Login',
+            ),
             Padding(
               padding: EdgeInsets.all(32.0),
               child: Form(
@@ -52,7 +53,7 @@ class LoginPage extends StatelessWidget {
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
