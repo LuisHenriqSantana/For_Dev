@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   http:
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
@@ -32,6 +33,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons:
   test:
   mockito:
   faker:
@@ -47,9 +49,20 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+
   # To add assets to your application, add an assets section, like this:
   assets:
   - lib/ui/assets/
+flutter_icons:
+    ios: true
+    android: true
+    image_path_android: lib/ui/assets/icon/android.png
+    image_path_ios: lib/ui/assets/icon/ios.png
+    adaptive_icon_background: lib/ui/assets/icon/background.png
+    adaptive_icon_foreground: lib/ui/assets/icon/foreground.png
+
+
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
