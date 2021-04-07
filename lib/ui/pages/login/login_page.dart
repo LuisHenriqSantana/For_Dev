@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:for_dev/ui/components/components.dart';
+import 'package:provider/provider.dart';
+
+import '../../components/components.dart';
+import 'components/components.dart';
 import 'login_presenter.dart';
 
 class LoginPage extends StatefulWidget {
@@ -46,61 +49,48 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 Padding(
                   padding: EdgeInsets.all(32.0),
-                  child: Form(
-                    child: Column(
-                      children: <Widget>[
-                        StreamBuilder<String>(
-                            stream: widget.presenter.emailErrorStream,
-                            builder: (context, snapshot) {
-                              return TextFormField(
-                                decoration: InputDecoration(
-                                    labelText: 'Email',
-                                    icon: Icon(
-                                      Icons.email,
-                                      color: Theme.of(context).primaryColorLight,
+                  child: Provider(
+                    create:(_) => widget.presenter,
+                    child: Form(
+                      child: Column(
+                        children: <Widget>[
+                          EmailInput(),
+                          Padding(
+                            padding: EdgeInsets.only(top: 8, bottom: 32),
+                            child: StreamBuilder<String>(
+                                stream: widget.presenter.passwordErrorStream,
+                                builder: (context, snapshot) {
+                                  return TextFormField(
+                                    decoration: InputDecoration(
+                                        labelText: 'Senha',
+                                        icon: Icon(
+                                          Icons.lock,
+                                          color: Theme.of(context).primaryColorLight,
+                                        ),
+                                        errorText: snapshot.data?.isEmpty == true ? null : snapshot.data
                                     ),
-                                    errorText: snapshot.data?.isEmpty == true ? null : snapshot.data
-                                ),
-                                keyboardType: TextInputType.emailAddress,
-                                onChanged: widget.presenter.validateEmail,
-                              );
-                            }
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 8, bottom: 32),
-                          child: StreamBuilder<String>(
-                              stream: widget.presenter.passwordErrorStream,
+                                    onChanged: widget.presenter.validatePassword,
+                                    obscureText: true,
+                                  );
+                                }
+                            ),
+                          ),
+                          StreamBuilder<bool>(
+                              stream: widget.presenter.isFormValidStream,
                               builder: (context, snapshot) {
-                                return TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: 'Senha',
-                                      icon: Icon(
-                                        Icons.lock,
-                                        color: Theme.of(context).primaryColorLight,
-                                      ),
-                                      errorText: snapshot.data?.isEmpty == true ? null : snapshot.data
-                                  ),
-                                  onChanged: widget.presenter.validatePassword,
-                                  obscureText: true,
+                                return RaisedButton(
+                                  onPressed: snapshot.data == true? widget.presenter.auth : null,
+                                  child: Text('Entrar'.toUpperCase()),
                                 );
                               }
                           ),
-                        ),
-                        StreamBuilder<bool>(
-                            stream: widget.presenter.isFormValidStream,
-                            builder: (context, snapshot) {
-                              return RaisedButton(
-                                onPressed: snapshot.data == true? widget.presenter.auth : null,
-                                child: Text('Entrar'.toUpperCase()),
-                              );
-                            }
-                        ),
-                        FlatButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.person),
-                          label: Text('Criar Conta'),
-                        ),
-                      ],
+                          FlatButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.person),
+                            label: Text('Criar Conta'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -112,3 +102,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
