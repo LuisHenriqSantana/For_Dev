@@ -1,7 +1,7 @@
 import 'package:faker/faker.dart';
 import 'package:for_dev/data/http/http_client.dart';
 import 'package:for_dev/data/http/http_error.dart';
-import 'package:for_dev/data/usecases/remote_authentication.dart';
+import 'package:for_dev/data/usecases/authentication/remote_authentication.dart';
 import 'package:for_dev/domain/helpers/domain_error.dart';
 import 'package:for_dev/domain/usecases/authentication.dart';
 import 'package:mockito/mockito.dart';
