@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:for_dev/domain/entities/account_entity.dart';
 import 'package:for_dev/domain/helpers/domain_error.dart';
 import 'package:for_dev/domain/usecases/authentication.dart';
+import 'package:for_dev/domain/usecases/save_current_account.dart';
 import 'package:for_dev/presentation/presenters/presenters.dart';
 import 'package:for_dev/presentation/protocols/validation.dart';
 import 'package:mockito/mockito.dart';
@@ -11,12 +12,16 @@ class ValidationSpy extends Mock implements Validation {}
 
 class AuthenticationSpy extends Mock implements Authentication {}
 
+class SaveCurrentAccountSpy extends Mock implements SaveCurrentAccount {}
+
 void main() {
   GetxLoginPresenter sut;
   AuthenticationSpy authentication;
   ValidationSpy validation;
+  SaveCurrentAccountSpy saveCurrentAccount;
   String email;
   String password;
+  String token;
 
   PostExpectation mockValidationCall(String field) => when(validation.validate(
       field: field == null ? anyNamed('field') : field,
@@ -28,21 +33,26 @@ void main() {
 
   PostExpectation mockAuthenticationCall() => when(authentication.auth(any));
 
-  void mockAuthentication(){
-    mockAuthenticationCall().thenAnswer((_) async => AccountEntity(faker.guid.guid()));
+  void mockAuthentication() {
+    mockAuthenticationCall().thenAnswer((_) async => AccountEntity(token));
   }
 
-  void mockAuthenticationError(DomainError error){
-    mockAuthenticationCall().thenThrow(error); 
+  void mockAuthenticationError(DomainError error) {
+    mockAuthenticationCall().thenThrow(error);
   }
 
   setUp(() {
     validation = ValidationSpy();
     authentication = AuthenticationSpy();
+    saveCurrentAccount = SaveCurrentAccountSpy();
     sut = GetxLoginPresenter(
-        validation: validation, authentication: authentication);
+      validation: validation,
+      authentication: authentication,
+      saveCurrentAccount: saveCurrentAccount,
+    );
     email = faker.internet.email();
     password = faker.internet.password();
+    token = faker.guid.guid();
     mockValidation();
     mockAuthentication();
   });
@@ -138,10 +148,19 @@ void main() {
         .called(1);
   });
 
+  test('Should call SaveCurrentAccount with correct value', () async {
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+
+    await sut.auth();
+
+    verify(saveCurrentAccount.save(AccountEntity(token))).called(1);
+  });
+
   test('Should emit correct events on Authentication success', () async {
     sut.validateEmail(email);
     sut.validatePassword(password);
-    
+
     expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
 
     await sut.auth();
@@ -153,7 +172,8 @@ void main() {
     sut.validatePassword(password);
 
     expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
-    sut.mainErrorStream.listen(expectAsync1((error)=> expect(error, 'Credenciais inválidas.')));
+    sut.mainErrorStream.listen(
+        expectAsync1((error) => expect(error, 'Credenciais inválidas.')));
 
     await sut.auth();
   });
@@ -164,7 +184,8 @@ void main() {
     sut.validatePassword(password);
 
     expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
-    sut.mainErrorStream.listen(expectAsync1((error)=> expect(error, 'Algo errado aconteceu. Tente novamente em breve')));
+    sut.mainErrorStream.listen(expectAsync1((error) =>
+        expect(error, 'Algo errado aconteceu. Tente novamente em breve')));
 
     await sut.auth();
   });

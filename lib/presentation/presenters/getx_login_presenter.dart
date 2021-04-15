@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:for_dev/domain/helpers/domain_error.dart';
+import 'package:for_dev/domain/usecases/save_current_account.dart';
 import 'package:for_dev/ui/pages/login/login_presenter.dart';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
@@ -7,9 +8,10 @@ import 'package:meta/meta.dart';
 import '../../domain/usecases/usecases.dart';
 import '../protocols/protocols.dart';
 
-class GetxLoginPresenter extends GetxController implements LoginPresenter{
+class GetxLoginPresenter extends GetxController implements LoginPresenter {
   final Validation validation;
   final Authentication authentication;
+  final SaveCurrentAccount saveCurrentAccount;
 
   String _email;
   String _password;
@@ -24,10 +26,12 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter{
   Stream<String> get mainErrorStream => _mainError.stream;
   Stream<bool> get isFormValidStream => _isFormValid.stream;
   Stream<bool> get isLoadingStream => _isLoading.stream;
-  GetxLoginPresenter(
-      {@required this.validation, @required this.authentication});
 
-
+  GetxLoginPresenter({
+    @required this.validation,
+    @required this.authentication,
+    @required this.saveCurrentAccount,
+  });
 
   void validateEmail(String email) {
     _email = email;
@@ -43,17 +47,17 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter{
   }
 
   void _validateForm() {
-    _isFormValid.value = _emailError.value == null
-        && _passwordError.value == null
-        && _email != null
-        && _password != null;
+    _isFormValid.value = _emailError.value == null &&
+        _passwordError.value == null &&
+        _email != null &&
+        _password != null;
   }
 
   Future<void> auth() async {
     _isLoading.value = true;
     try {
-      await authentication.auth(
-          AuthenticationParams(email: _email, secret: _password));
+      final account = await authentication.auth(AuthenticationParams(email: _email, secret: _password));
+      await saveCurrentAccount.save(account);
     } on DomainError catch (error) {
       _mainError.value = error.description;
     }
