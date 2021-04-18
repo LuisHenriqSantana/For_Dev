@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:for_dev/ui/helpers/errors/errors.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +34,7 @@ class LoginPage extends StatelessWidget {
 
           presenter.mainErrorStream.listen((error) {
             if(error != null) {
-             showErrorMessage(context, error);
+             showErrorMessage(context, error.description);
             }
           });
 
