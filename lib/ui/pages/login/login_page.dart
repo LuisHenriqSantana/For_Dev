@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:for_dev/ui/helpers/errors/errors.dart';
+import 'package:for_dev/ui/helpers/helpers.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -45,20 +46,18 @@ class LoginPage extends StatelessWidget {
             }
           });
 
-            return GestureDetector(
-              onTap: _hideKeyboard,
-              child: SingleChildScrollView(
+          return GestureDetector(
+            onTap: () => _hideKeyboard(),
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   LoginHeader(),
-                  Headline1(
-                    text: 'Login',
-                  ),
+                  Headline1(text: R.string.login),
                   Padding(
-                    padding: EdgeInsets.all(32.0),
+                    padding: EdgeInsets.all(32),
                     child: Provider(
-                      create:(_) => presenter,
+                      create: (_) => presenter,
                       child: Form(
                         child: Column(
                           children: <Widget>[
@@ -69,23 +68,21 @@ class LoginPage extends StatelessWidget {
                             ),
                             LoginButton(),
                             FlatButton.icon(
-                              onPressed: () {},
-                              icon: Icon(Icons.person),
-                              label: Text('Criar Conta'),
-                            ),
+                                onPressed: (){},
+                                icon: Icon(Icons.person),
+                                label: Text(R.string.addAccount)
+                            )
                           ],
                         ),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
-          ),
-            );
+            ),
+          );
         },
       ),
     );
   }
 }
-
-

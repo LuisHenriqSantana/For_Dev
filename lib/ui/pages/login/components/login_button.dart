@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:for_dev/ui/helpers/helpers.dart';
 import 'package:provider/provider.dart';
-
 import '../login_presenter.dart';
 
 class LoginButton extends StatelessWidget {
@@ -11,10 +11,10 @@ class LoginButton extends StatelessWidget {
         stream: presenter.isFormValidStream,
         builder: (context, snapshot) {
           return RaisedButton(
-            onPressed: snapshot.data == true?presenter.auth : null,
-            child: Text('Entrar'.toUpperCase()),
+            onPressed: snapshot.data == true ? presenter.auth : null,
+            child: Text(R.string.enter.toUpperCase()),
           );
-        }
+        },
     );
   }
 }
