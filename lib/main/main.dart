@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:for_dev/ui/components/components.dart';
 import 'package:get/get.dart';
-
+import 'package:provider/provider.dart';
 import 'factories/factories.dart';
 
 void main() {
+  Provider.debugCheckInvalidValueType = null;
   runApp(App());
 }
 
@@ -13,7 +14,6 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-
 
     return GetMaterialApp(
       title: '4Dev',
