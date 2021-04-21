@@ -1,27 +1,32 @@
 import 'dart:async';
 
+import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:for_dev/ui/helpers/errors/errors.dart';
-import 'package:for_dev/ui/pages/login/login.dart';
+import 'package:for_dev/ui/pages/signup/components/signup_presenter.dart';
 import 'package:for_dev/ui/pages/signup/signup.dart';
 import 'package:mockito/mockito.dart';
 import 'package:get/get.dart';
 
-class LoginPresenterSpy extends Mock implements LoginPresenter {}
+class SignUpPresenterSpy extends Mock implements SignUpPresenter {}
 
 void main() {
-  LoginPresenter presenter;
+  SignUpPresenter presenter;
+  StreamController<UIError> nameErrorController;
   StreamController<UIError> emailErrorController;
   StreamController<UIError> passwordErrorController;
+  StreamController<UIError> passwordConfirmationErrorController;
   StreamController<UIError> mainErrorController;
   StreamController<String> navigateToController;
   StreamController<bool> isFormValidController;
   StreamController<bool> isLoadingController;
 
   void initStreams() {
+    nameErrorController = StreamController<UIError>();
     emailErrorController = StreamController<UIError>();
     passwordErrorController = StreamController<UIError>();
+    passwordConfirmationErrorController = StreamController<UIError>();
     mainErrorController = StreamController<UIError>();
     navigateToController = StreamController<String>();
     isFormValidController = StreamController<bool>();
@@ -29,23 +34,22 @@ void main() {
   }
 
   void mockStreams() {
+    when(presenter.nameErrorStream)
+        .thenAnswer((_) => nameErrorController.stream);
     when(presenter.emailErrorStream)
         .thenAnswer((_) => emailErrorController.stream);
+
     when(presenter.passwordErrorStream)
         .thenAnswer((_) => passwordErrorController.stream);
-    when(presenter.mainErrorStream)
-        .thenAnswer((_) => mainErrorController.stream);
-    when(presenter.navigateToStream)
-        .thenAnswer((_) => navigateToController.stream);
-    when(presenter.isFormValidStream)
-        .thenAnswer((_) => isFormValidController.stream);
-    when(presenter.isLoadingStream)
-        .thenAnswer((_) => isLoadingController.stream);
+    when(presenter.passwordConfirmationErrorStream)
+        .thenAnswer((_) => passwordConfirmationErrorController.stream);
   }
 
   void closeStreams() {
+    nameErrorController.close();
     emailErrorController.close();
     passwordErrorController.close();
+    passwordConfirmationErrorController.close();
     mainErrorController.close();
     navigateToController.close();
     isFormValidController.close();
@@ -53,13 +57,13 @@ void main() {
   }
 
   Future<void> loadPage(WidgetTester tester) async {
-    presenter = LoginPresenterSpy();
+    presenter = SignUpPresenterSpy();
     initStreams();
     mockStreams();
     final signUpPage = GetMaterialApp(
       initialRoute: '/signup',
       getPages: [
-        GetPage(name: '/signup', page: () => SignUpPage()),
+        GetPage(name: '/signup', page: () => SignUpPage(presenter)),
         GetPage(
             name: '/any_route', page: () => Scaffold(body: Text('fake page'))),
       ],
@@ -71,35 +75,58 @@ void main() {
     closeStreams();
   });
 
-  testWidgets('Should load with correct initial state', (WidgetTester tester) async {
-        await loadPage(tester);
+  testWidgets('Should load with correct initial state',
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        final nameTextChildren = find.descendant(
-            of: find.bySemanticsLabel('Nome'), matching: find.byType(Text));
-        expect(
-          nameTextChildren,
-          findsOneWidget,
-        );
+    final nameTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Nome'), matching: find.byType(Text));
+    expect(
+      nameTextChildren,
+      findsOneWidget,
+    );
 
-        final emailTextChildren = find.descendant(
-            of: find.bySemanticsLabel('Email'), matching: find.byType(Text));
-        expect(
-          emailTextChildren,
-          findsOneWidget,
-        );
+    final emailTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Email'), matching: find.byType(Text));
+    expect(
+      emailTextChildren,
+      findsOneWidget,
+    );
+    final passwordTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Senha'), matching: find.byType(Text));
+    expect(
+      passwordTextChildren,
+      findsOneWidget,
+    );
+    final passwordConfirmationTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Confirmar senha'),
+        matching: find.byType(Text));
+    expect(
+      passwordConfirmationTextChildren,
+      findsOneWidget,
+    );
+    final button = tester.widget<RaisedButton>(find.byType(RaisedButton));
+    expect(button.onPressed, null);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
 
-        final passwordTextChildren = find.descendant(
-            of: find.bySemanticsLabel('Senha'), matching: find.byType(Text));
-        expect(
-          passwordTextChildren,
-          findsOneWidget,
-        );
+  testWidgets('Should call validate with correct values',
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        final passwordConfirmationTextChildren = find.descendant(
-            of: find.bySemanticsLabel('Confirmar senha'), matching: find.byType(Text));
-        expect(
-          passwordConfirmationTextChildren,
-          findsOneWidget,
-        );
-      });
+    final name = faker.person.name();
+    await tester.enterText(find.bySemanticsLabel('Nome'), name);
+    verify(presenter.validateName(name));
+
+    final email = faker.internet.email();
+    await tester.enterText(find.bySemanticsLabel('Email'), email);
+    verify(presenter.validateEmail(email));
+
+    final password = faker.internet.password();
+    await tester.enterText(find.bySemanticsLabel('Senha'), password);
+    verify(presenter.validatePassword(password));
+
+    await tester.enterText(find.bySemanticsLabel('Confirmar senha'), password);
+    verify(presenter.validatePasswordConfirmation(password));
+  });
 }

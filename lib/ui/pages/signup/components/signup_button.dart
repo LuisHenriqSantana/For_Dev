@@ -5,7 +5,7 @@ class SignUpButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      onPressed: (){},
+      onPressed: null,
       child: Text(R.string.addAccount.toUpperCase()),
     );
   }
