@@ -4,6 +4,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:for_dev/ui/helpers/errors/errors.dart';
+import 'package:for_dev/ui/pages/login/login.dart';
 import 'package:for_dev/ui/pages/pages.dart';
 import 'package:mockito/mockito.dart';
 import 'package:get/get.dart';
