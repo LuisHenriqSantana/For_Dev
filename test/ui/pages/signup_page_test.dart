@@ -49,6 +49,9 @@ void main() {
 
     when(presenter.isLoadingStream)
         .thenAnswer((_) => isLoadingController.stream);
+
+    when(presenter.mainErrorStream)
+        .thenAnswer((_) => mainErrorController.stream);
   }
 
   void closeStreams() {
@@ -267,5 +270,23 @@ void main() {
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
+
+  testWidgets('Should present error message if signUp fails',
+          (WidgetTester tester) async {
+        await loadPage(tester);
+
+        mainErrorController.add(UIError.emailInUse);
+        await tester.pump();
+        expect(find.text('O email já está em uso'), findsOneWidget);
+      });
+
+  testWidgets('Should present error message if signUp throws',
+          (WidgetTester tester) async {
+        await loadPage(tester);
+
+        mainErrorController.add(UIError.unexpected);
+        await tester.pump();
+        expect(find.text('Algo errado aconteceu. Tente novamente em breve'), findsOneWidget);
+      });
 
 }
