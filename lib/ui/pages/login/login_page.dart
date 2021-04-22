@@ -11,22 +11,22 @@ import 'login_presenter.dart';
 class LoginPage extends StatelessWidget {
   final LoginPresenter presenter;
 
- LoginPage(this.presenter);
+  LoginPage(this.presenter);
 
   @override
   Widget build(BuildContext context) {
-    void _hideKeyboard(){
+    void _hideKeyboard() {
       final currentFocus = FocusScope.of(context);
-      if (!currentFocus.hasPrimaryFocus){
+      if (!currentFocus.hasPrimaryFocus) {
         currentFocus.unfocus();
       }
     }
 
     return Scaffold(
       body: Builder(
-        builder: (context){
+        builder: (context) {
           presenter.isLoadingStream.listen((isLoading) {
-            if (isLoading){
+            if (isLoading) {
               showLoading(context);
             } else {
               hideLoading(context);
@@ -34,14 +34,13 @@ class LoginPage extends StatelessWidget {
           });
 
           presenter.mainErrorStream.listen((error) {
-            if(error != null) {
-             showErrorMessage(context, error.description);
+            if (error != null) {
+              showErrorMessage(context, error.description);
             }
           });
 
-
           presenter.navigateToStream.listen((page) {
-            if(page?.isNotEmpty == true) {
+            if (page?.isNotEmpty == true) {
               Get.offAllNamed(page);
             }
           });
@@ -68,10 +67,9 @@ class LoginPage extends StatelessWidget {
                             ),
                             LoginButton(),
                             FlatButton.icon(
-                                onPressed: (){},
+                                onPressed: () {},
                                 icon: Icon(Icons.person),
-                                label: Text(R.string.addAccount)
-                            )
+                                label: Text(R.string.addAccount))
                           ],
                         ),
                       ),
