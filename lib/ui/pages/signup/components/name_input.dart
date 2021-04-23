@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:for_dev/ui/helpers/helpers.dart';
-import 'package:for_dev/ui/pages/signup/components/signup_presenter.dart';
+import 'package:for_dev/ui/pages/signup/signup_presenter.dart';
 import 'package:provider/provider.dart';
 
 class NameInput extends StatelessWidget {

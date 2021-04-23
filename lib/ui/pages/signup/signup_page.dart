@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:for_dev/ui/components/components.dart';
 import 'package:for_dev/ui/helpers/helpers.dart';
-import 'package:for_dev/ui/pages/signup/components/signup_presenter.dart';
+import 'package:for_dev/ui/pages/signup/signup_presenter.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 

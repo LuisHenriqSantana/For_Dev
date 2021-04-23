@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:for_dev/ui/helpers/helpers.dart';
 import 'package:provider/provider.dart';
 
-import 'signup_presenter.dart';
+import '../signup_presenter.dart';
 
 class SignUpButton extends StatelessWidget {
   @override
