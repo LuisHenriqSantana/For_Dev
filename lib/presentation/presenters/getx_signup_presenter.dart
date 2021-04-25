@@ -19,6 +19,7 @@ class GetxSignUpPresenter extends GetxController {
   final _passwordConfirmationError = Rx<UIError>();
   final _isFormValid = false.obs;
   final _isLoading = false.obs;
+  final _navigateTo = RxString();
 
   String _name;
   String _email;
@@ -33,6 +34,7 @@ class GetxSignUpPresenter extends GetxController {
       _passwordConfirmationError.stream;
   Stream<bool> get isLoadingStream => _isLoading.stream;
   Stream<bool> get isFormValidStream => _isFormValid.stream;
+  Stream<String> get navigateToStream => _navigateTo.stream;
 
   GetxSignUpPresenter({
     @required this.validation,
@@ -89,22 +91,23 @@ class GetxSignUpPresenter extends GetxController {
   }
 
   Future<void> signUp() async {
-    try{
-    _isLoading.value = true;
-    final account = await addAccount.add(AddAccountParams(
-      name: _name,
-      email: _email,
-      password: _password,
-      passwordConfirmation: _passwordConfirmation,
-    ));
-    await saveCurrentAccount.save(account);
-  } on DomainError catch (error) {
+    try {
+      _isLoading.value = true;
+      final account = await addAccount.add(AddAccountParams(
+        name: _name,
+        email: _email,
+        password: _password,
+        passwordConfirmation: _passwordConfirmation,
+      ));
+      await saveCurrentAccount.save(account);
+      _navigateTo.value = '/surveys';
+    } on DomainError catch (error) {
       switch (error) {
-        case DomainError.emailInUse: _mainError.value = UIError.emailInUse; break;
-        default: _mainError.value = UIError.unexpected; break;
+        case DomainError.emailInUse:
+          _mainError.value = UIError.emailInUse; break;
+        default:_mainError.value = UIError.unexpected;break;
       }
-
       _isLoading.value = false;
     }
-    }
+  }
 }
