@@ -24,8 +24,9 @@ void main() {
   String password;
   String token;
 
-  PostExpectation mockValidationCall(String field) =>
-      when(validation.validate(field: field == null ? anyNamed('field') : field, input: anyNamed('input')));
+  PostExpectation mockValidationCall(String field) => when(validation.validate(
+      field: field == null ? anyNamed('field') : field,
+      input: anyNamed('input')));
 
   void mockValidation({String field, ValidationError value}) {
     mockValidationCall(field).thenReturn(value);
@@ -65,12 +66,11 @@ void main() {
   });
 
   test('Should call Validation wih correct email', () {
-    final formData = {'email': email, 'password': null,};
+    final formData = {'email': email, 'password': null};
     sut.validateEmail(email);
 
     verify(validation.validate(field: 'email', input: formData)).called(1);
   });
-
 
   test('Should emit invalidFieldError if email is invalid', () {
     mockValidation(value: ValidationError.invalidField);
