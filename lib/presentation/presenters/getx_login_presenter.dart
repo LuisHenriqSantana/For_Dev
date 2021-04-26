@@ -53,7 +53,7 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
   UIError _validateField(String field) {
     final formData = {
       'email': _email,
-      'pasword': _password,
+      'password': _password,
     };
     final error = validation.validate(field: field, input: formData);
     switch (error){
