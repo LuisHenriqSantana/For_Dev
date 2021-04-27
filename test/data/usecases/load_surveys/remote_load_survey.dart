@@ -27,7 +27,7 @@ void main() {
     sut = RemoteLoadSurveys(url: url, httpClient: httpClient);
   });
 
-  test('Shou call HttpClient with correct values', () async {
+  test('Shoud call HttpClient with correct values', () async {
     await sut.load();
 
     verify(httpClient.request(url: url, method: 'get'));
