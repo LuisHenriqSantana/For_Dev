@@ -19,8 +19,10 @@ class RemoteLoadSurveys {
       return httpResponse
           .map((json) => RemoteSurveyModel.fromJson(json).toEntity())
           .toList();
-    } on HttpError {
-      throw DomainError.unexpected;
+    } on HttpError catch (error) {
+      throw error == HttpError.forbidden
+          ? DomainError.accessDenied
+          : DomainError.unexpected;
     }
   }
 }
@@ -90,15 +92,17 @@ void main() {
     ]);
   });
 
-    test('Should throw UnexpectedError if HttpClient returns 200 with invalid data', () async {
-      mockHttpData([
-        {'invalid_key': 'invalid_value'}
-      ]);
+  test(
+      'Should throw UnexpectedError if HttpClient returns 200 with invalid data',
+      () async {
+    mockHttpData([
+      {'invalid_key': 'invalid_value'}
+    ]);
 
-      final future = sut.load();
+    final future = sut.load();
 
-      expect(future, throwsA(DomainError.unexpected));
-    });
+    expect(future, throwsA(DomainError.unexpected));
+  });
 
   test('Should throw UnexpectedError if HttpClient returns 404', () async {
     mockHttpError(HttpError.notFound);
@@ -114,5 +118,13 @@ void main() {
     final future = sut.load();
 
     expect(future, throwsA(DomainError.unexpected));
+  });
+
+  test('Should throw InvalidCredentialsError if HttpClient returns 403',
+      () async {
+    mockHttpError(HttpError.forbidden);
+    final future = sut.load();
+
+    expect(future, throwsA(DomainError.accessDenied));
   });
 }
