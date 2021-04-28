@@ -7,7 +7,7 @@ import 'package:for_dev/domain/usecases/usecases.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-class HttpClientSpy extends Mock implements HttpClient {}
+class HttpClientSpy extends Mock implements HttpClient<Map>{}
 
 void main() {
   RemoteAddAccount sut;
