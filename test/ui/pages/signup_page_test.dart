@@ -76,7 +76,8 @@ void main() {
       initialRoute: '/signup',
       getPages: [
         GetPage(name: '/signup', page: () => SignUpPage(presenter)),
-        GetPage(name: '/any_route', page: () => Scaffold(body: Text('fake page'))),
+        GetPage(
+            name: '/any_route', page: () => Scaffold(body: Text('fake page'))),
       ],
     );
     await tester.pumpWidget(signUpPage);
@@ -120,9 +121,9 @@ void main() {
     emailErrorController.add(null);
     await tester.pump();
     expect(
-        find.descendant(of: find.bySemanticsLabel('Email'), matching: find.byType(Text)),
-        findsOneWidget
-    );
+        find.descendant(
+            of: find.bySemanticsLabel('Email'), matching: find.byType(Text)),
+        findsOneWidget);
   });
 
   testWidgets('Should present name error', (WidgetTester tester) async {
@@ -139,9 +140,9 @@ void main() {
     nameErrorController.add(null);
     await tester.pump();
     expect(
-        find.descendant(of: find.bySemanticsLabel('Nome'), matching: find.byType(Text)),
-        findsOneWidget
-    );
+        find.descendant(
+            of: find.bySemanticsLabel('Nome'), matching: find.byType(Text)),
+        findsOneWidget);
   });
 
   testWidgets('Should present password error', (WidgetTester tester) async {
@@ -158,12 +159,13 @@ void main() {
     passwordErrorController.add(null);
     await tester.pump();
     expect(
-        find.descendant(of: find.bySemanticsLabel('Senha'), matching: find.byType(Text)),
-        findsOneWidget
-    );
+        find.descendant(
+            of: find.bySemanticsLabel('Senha'), matching: find.byType(Text)),
+        findsOneWidget);
   });
 
-  testWidgets('Should present passwordConfirmation error', (WidgetTester tester) async {
+  testWidgets('Should present passwordConfirmation error',
+      (WidgetTester tester) async {
     await loadPage(tester);
 
     passwordConfirmationErrorController.add(UIError.invalidField);
@@ -177,84 +179,89 @@ void main() {
     passwordConfirmationErrorController.add(null);
     await tester.pump();
     expect(
-        find.descendant(of: find.bySemanticsLabel('Confirmar senha'), matching: find.byType(Text)),
-        findsOneWidget
-    );
+        find.descendant(
+            of: find.bySemanticsLabel('Confirmar senha'),
+            matching: find.byType(Text)),
+        findsOneWidget);
   });
 
   testWidgets('Should enable button if form is valid',
-          (WidgetTester tester) async {
-        await loadPage(tester);
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        isFormValidController.add(true);
-        await tester.pump();
+    isFormValidController.add(true);
+    await tester.pump();
 
-        final button = tester.widget<RaisedButton>(find.byType(RaisedButton));
-        expect(button.onPressed, isNotNull);
-      });
+    final button = tester.widget<RaisedButton>(find.byType(RaisedButton));
+    expect(button.onPressed, isNotNull);
+  });
 
   testWidgets('Should disable button if form is invalid',
-          (WidgetTester tester) async {
-        await loadPage(tester);
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        isFormValidController.add(false);
-        await tester.pump();
+    isFormValidController.add(false);
+    await tester.pump();
 
-        final button = tester.widget<RaisedButton>(find.byType(RaisedButton));
-        expect(button.onPressed, null);
-      });
+    final button = tester.widget<RaisedButton>(find.byType(RaisedButton));
+    expect(button.onPressed, null);
+  });
 
-  testWidgets('Should call signUp on form submit',
-          (WidgetTester tester) async {
-        await loadPage(tester);
+  testWidgets('Should call signUp on form submit', (WidgetTester tester) async {
+    await loadPage(tester);
 
-        isFormValidController.add(true);
-        await tester.pump();
-        final button = find.byType(RaisedButton);
-        await tester.ensureVisible(button);
-        await tester.tap(button);
-        await tester.pump();
+    isFormValidController.add(true);
+    await tester.pump();
+    final button = find.byType(RaisedButton);
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pump();
 
-        verify(presenter.signUp()).called(1);
-      });
+    verify(presenter.signUp()).called(1);
+  });
 
-  testWidgets('Should present loading', (WidgetTester tester) async {
+  testWidgets('Should handle loading correctly', (WidgetTester tester) async {
     await loadPage(tester);
 
     isLoadingController.add(true);
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-  });
 
-  testWidgets('Should hide loading', (WidgetTester tester) async {
-    await loadPage(tester);
+    isLoadingController.add(false);
+    await tester.pump();
+
+    expect(find.byType(CircularProgressIndicator), findsNothing);
 
     isLoadingController.add(true);
     await tester.pump();
-    isLoadingController.add(false);
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    isLoadingController.add(null);
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
   testWidgets('Should present error message if signUp fails',
-          (WidgetTester tester) async {
-        await loadPage(tester);
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        mainErrorController.add(UIError.emailInUse);
-        await tester.pump();
-        expect(find.text('O email já está em uso'), findsOneWidget);
-      });
+    mainErrorController.add(UIError.emailInUse);
+    await tester.pump();
+    expect(find.text('O email já está em uso'), findsOneWidget);
+  });
 
   testWidgets('Should present error message if signUp throws',
-          (WidgetTester tester) async {
-        await loadPage(tester);
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        mainErrorController.add(UIError.unexpected);
-        await tester.pump();
-        expect(find.text('Algo errado aconteceu. Tente novamente em breve'), findsOneWidget);
-      });
+    mainErrorController.add(UIError.unexpected);
+    await tester.pump();
+    expect(find.text('Algo errado aconteceu. Tente novamente em breve'),
+        findsOneWidget);
+  });
 
   testWidgets('Should change page', (WidgetTester tester) async {
     await loadPage(tester);
@@ -279,15 +286,14 @@ void main() {
   });
 
   testWidgets('Should call goToLogin on link click',
-          (WidgetTester tester) async {
-        await loadPage(tester);
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        final button = find.text('Login');
-        await tester.ensureVisible(button);
-        await tester.tap(button);
-        await tester.pump();
+    final button = find.text('Login');
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pump();
 
-        verify(presenter.goToLogin()).called(1);
-      });
-
+    verify(presenter.goToLogin()).called(1);
+  });
 }
