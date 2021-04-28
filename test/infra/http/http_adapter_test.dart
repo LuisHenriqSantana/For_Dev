@@ -91,6 +91,7 @@ void main() {
 
       expect(response, null);
     });
+
     test('Should return BadRequestError if post returns 400', () async {
       mockResponse(400, body: '');
 
@@ -189,6 +190,22 @@ void main() {
 
     test('Should return null if get returns 200 with no data', () async {
       mockResponse(200, body: '');
+
+      final response = await sut.request(url: url, method: 'get');
+
+      expect(response, null);
+    });
+
+    test('Should return null if get returns 204', () async {
+      mockResponse(204, body: '');
+
+      final response = await sut.request(url: url, method: 'get');
+
+      expect(response, null);
+    });
+
+    test('Should return null if get returns 204 with data', () async {
+      mockResponse(204);
 
       final response = await sut.request(url: url, method: 'get');
 
