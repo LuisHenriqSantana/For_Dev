@@ -1,6 +1,7 @@
 import 'package:faker/faker.dart';
 import 'package:for_dev/data/models/models.dart';
 import 'package:for_dev/domain/entities/entities.dart';
+import 'package:for_dev/domain/helpers/helpers.dart';
 import 'package:meta/meta.dart';
 import 'package:for_dev/data/http/http.dart';
 import 'package:mockito/mockito.dart';
@@ -13,8 +14,14 @@ class RemoteLoadSurveys {
   RemoteLoadSurveys({@required this.url, @required this.httpClient});
 
   Future<List<SurveyEntity>> load() async {
-    final httpResponse = await httpClient.request(url: url, method: 'get');
-    return httpResponse.map((json) => RemoteSurveyModel.fromJson(json).toEntity()).toList();
+    try {
+      final httpResponse = await httpClient.request(url: url, method: 'get');
+      return httpResponse
+          .map((json) => RemoteSurveyModel.fromJson(json).toEntity())
+          .toList();
+    } on HttpError {
+      throw DomainError.unexpected;
+    }
   }
 }
 
@@ -31,13 +38,13 @@ void main() {
           'id': faker.guid.guid(),
           'question': faker.randomGenerator.string(50),
           'didAnswer': faker.randomGenerator.boolean(),
-          'date': faker.date.time().toString(),
+          'date': faker.date.dateTime().toIso8601String(),
         },
         {
           'id': faker.guid.guid(),
           'question': faker.randomGenerator.string(50),
           'didAnswer': faker.randomGenerator.boolean(),
-          'date': faker.date.time().toString(),
+          'date': faker.date.dateTime().toIso8601String(),
         }
       ];
 
@@ -64,13 +71,12 @@ void main() {
 
   test('Should return surveys on 200', () async {
     final surveys = await sut.load();
-
     expect(surveys, [
       SurveyEntity(
-          id: list[0]['id'],
-          question: list[0]['question'],
-          dateTime: DateTime.parse(list[0]['date']),
-          didAnswer: list[0]['didAnswer'],
+        id: list[0]['id'],
+        question: list[0]['question'],
+        dateTime: DateTime.parse(list[0]['date']),
+        didAnswer: list[0]['didAnswer'],
       ),
       SurveyEntity(
           id: list[1]['id'],
@@ -79,4 +85,14 @@ void main() {
           didAnswer: list[1]['didAnswer']),
     ]);
   });
+
+    test('Should throw UnexpectedError if HttpClient returns 200 with invalid data', () async {
+      mockHttpData([
+        {'invalid_key': 'invalid_value'}
+      ]);
+
+      final future = sut.load();
+
+      expect(future, throwsA(DomainError.unexpected));
+    });
 }
