@@ -3,6 +3,6 @@ import 'package:for_dev/domain/usecases/usecases.dart';
 import 'package:for_dev/main/factories/factories.dart';
 
 LoadSurveys makeRemoteLoadSurveys() => RemoteLoadSurveys(
-      httpClient: makeHttpAdapter(),
+      httpClient: makeAuthorizeHttpClientDecorator(),
       url: makeApiUrl('surveys'),
     );
