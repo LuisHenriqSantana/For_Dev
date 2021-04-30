@@ -8,8 +8,7 @@ import 'package:test/test.dart';
 
 class CacheStorageSpy extends Mock implements CacheStorage {}
 
-void main() { 
-
+void main() {
   group('load', () {
     LocalLoadSurveys sut;
     CacheStorageSpy cacheStorage;
@@ -115,6 +114,50 @@ void main() {
       final future = sut.load();
 
       expect(future, throwsA(DomainError.unexpected));
+    });
+  });
+
+  group('validate', () {
+    LocalLoadSurveys sut;
+    CacheStorageSpy cacheStorage;
+    List<Map> data;
+
+    List<Map> mockValidData() => [
+          {
+            'id': faker.guid.guid(),
+            'question': faker.randomGenerator.string(10),
+            'date': '2020-07-20T00:00:00Z',
+            'didAnswer': 'false',
+          },
+          {
+            'id': faker.guid.guid(),
+            'question': faker.randomGenerator.string(10),
+            'date': '2019-02-02T00:00:00Z',
+            'didAnswer': 'true',
+          }
+        ];
+
+    PostExpectation mockFetchCall() => when(cacheStorage.fetch(any));
+
+    void mockFetch(List<Map> list) {
+      data = list;
+      mockFetchCall().thenAnswer((_) async => data);
+    }
+
+    void mockFetchError() => mockFetchCall().thenThrow(Exception());
+
+    setUp(() {
+      cacheStorage = CacheStorageSpy();
+      sut = LocalLoadSurveys(
+        fetchCacheStorage: cacheStorage,
+      );
+      mockFetch(mockValidData());
+    });
+
+    test('Should call FetchCacheStorage with correct key', () async {
+      await sut.validate();
+
+      verify(cacheStorage.fetch('surveys')).called(1);
     });
   });
 }
