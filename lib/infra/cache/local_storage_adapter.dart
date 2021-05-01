@@ -1,7 +1,8 @@
+import 'package:for_dev/data/cache/cache.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:meta/meta.dart';
 
-class LocalStorageAdapter {
+class LocalStorageAdapter implements CacheStorage{
   final LocalStorage localStorage;
 
   LocalStorageAdapter({@required this.localStorage});

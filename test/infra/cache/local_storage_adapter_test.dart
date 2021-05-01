@@ -18,7 +18,7 @@ void main() {
   void mockSaveError() =>
       when(localStorage.setItem(any, any)).thenThrow(Exception());
 
-  setUpAll(() {
+  setUp(() {
     key = faker.randomGenerator.string(5);
     value = faker.randomGenerator.string(50);
     localStorage = LocalStorageSpy();
@@ -26,6 +26,7 @@ void main() {
   });
 
   group('save', () {
+
 
     test('Should call localStorage with correct values', () async {
       await sut.save(key: key, value: value);
@@ -51,7 +52,6 @@ void main() {
     });
   });
 
-
   group('delete', (){
 
     test('Should call localStorage with correct values', () async {
@@ -68,13 +68,27 @@ void main() {
       expect(future, throwsA(TypeMatcher<Exception>()));
     });
   });
-  
+
+
   group('fetch', (){
+    String result;
+
+    void mockFetch() => when(localStorage.getItem(any)).thenAnswer((_) => result);
+
+    setUp((){
+      mockFetch();
+    });
 
     test('Should call localStorage with correct value', () async{
       await sut.fetch(key);
 
       verify(localStorage.getItem(key)).called(1);
+    });
+
+    test('Should return same value as localStorage', () async{
+      final data = await sut.fetch(key);
+
+      expect(data, result);
     });
   });
 }
