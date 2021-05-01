@@ -68,4 +68,13 @@ void main() {
       expect(future, throwsA(TypeMatcher<Exception>()));
     });
   });
+  
+  group('fetch', (){
+
+    test('Should call localStorage with correct value', () async{
+      await sut.fetch(key);
+
+      verify(localStorage.getItem(key)).called(1);
+    });
+  });
 }
