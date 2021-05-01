@@ -3,6 +3,6 @@ import 'package:for_dev/domain/usecases/usecases.dart';
 import 'package:for_dev/main/factories/cache/cache.dart';
 
 LoadCurrentAccount makeLocalLoadCurrentAccount() {
-  return LocalLoadCurrentAccount(fetchSecureCacheStorage: makeLocalStorageAdapter()
+  return LocalLoadCurrentAccount(fetchSecureCacheStorage: makeSecureStorageAdapter()
   );
 }
