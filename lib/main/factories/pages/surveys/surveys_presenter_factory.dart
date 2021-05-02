@@ -4,5 +4,5 @@ import 'package:for_dev/ui/pages/pages.dart';
 import '../../factories.dart';
 
 SurveysPresenter makeGetxSurveysPresenter() =>
-    GetxSurveysPresenter(loadSurveys: makeRemoteLoadSurveys(),
+    GetxSurveysPresenter(loadSurveys: makeRemoteLoadSurveysWithLocalFallback(),
     );
