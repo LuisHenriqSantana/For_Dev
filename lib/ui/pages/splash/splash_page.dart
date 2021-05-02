@@ -10,7 +10,6 @@ class SplashPage extends StatelessWidget {
   SplashPage({@required this.presenter});
   @override
   Widget build(BuildContext context) {
-    presenter.checkAccount();
     return Scaffold(
       appBar: AppBar(
         title: Text('4Dev'),
@@ -22,6 +21,7 @@ class SplashPage extends StatelessWidget {
               Get.offAllNamed(page);
             }
           });
+          presenter.checkAccount();
 
           return  Center(
             child: CircularProgressIndicator(),
