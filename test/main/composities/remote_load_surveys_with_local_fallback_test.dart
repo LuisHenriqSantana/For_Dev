@@ -17,9 +17,17 @@ class RemoteLoadSurveysWithLocalFallback implements LoadSurveys {
   });
 
   Future<List<SurveyEntity>> load() async {
-    final surveys = await remote.load();
-    await local.save(surveys);
-    return surveys;
+    try {
+      final surveys = await remote.load();
+      await local.save(surveys);
+      return surveys;
+    } catch (error) {
+      if(error == DomainError.accessDenied){
+        rethrow;
+      }
+      await local.validate();
+      await local.load();
+    }
   }
 }
 
@@ -42,7 +50,7 @@ void main() {
         )
       ];
 
-  PostExpectation mockRemoteLoadCall() =>  when(remote.load());
+  PostExpectation mockRemoteLoadCall() => when(remote.load());
 
   void mockRemoteLoad() {
     remoteSurveys = mockSurveys();
@@ -83,8 +91,17 @@ void main() {
   test('Should rethrow if remote load throws AccessDeniedError', () async {
     mockRemoteLoadError(DomainError.accessDenied);
 
-    final future =  sut.load();
+    final future = sut.load();
 
     expect(future, throwsA(DomainError.accessDenied));
+  });
+
+  test('Should call local fetch on remote error', () async {
+    mockRemoteLoadError(DomainError.unexpected);
+
+    await sut.load();
+
+    verify(local.validate()).called(1);
+    verify(local.load()).called(1);
   });
 }
