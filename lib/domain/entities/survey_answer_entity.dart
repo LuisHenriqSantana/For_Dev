@@ -1,11 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-class SurveyAnswerEntity {
+class SurveyAnswerEntity extends Equatable{
   final String image;
   final String answer;
   final bool isCurrentAnswer;
   final int percent;
 
+  List get props => ['image', 'answer', 'isCurrentAnswer', 'didAnswer', 'percent'];
 
   SurveyAnswerEntity({
     this.image,
