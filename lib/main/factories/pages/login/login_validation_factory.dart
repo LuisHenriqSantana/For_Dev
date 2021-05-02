@@ -1,7 +1,7 @@
 import 'package:for_dev/main/builders/builders.dart';
+import 'package:for_dev/main/composities/composities.dart';
 import 'package:for_dev/presentation/protocols/protocols.dart';
 import 'package:for_dev/validation/protocols/protocols.dart';
-import 'package:for_dev/validation/validators/validators.dart';
 
 Validation makeLoginValidation() {
   return ValidationComposite(makeLoginValidations());
