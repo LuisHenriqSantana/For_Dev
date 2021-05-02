@@ -39,9 +39,7 @@ class SurveysPage extends StatelessWidget {
               if (snapshot.hasData) {
                 return SurveyItems(snapshot.data);
               }
-              return SizedBox(
-                height: 0,
-              );
+              return SizedBox(height: 0);
             });
       }),
     );
