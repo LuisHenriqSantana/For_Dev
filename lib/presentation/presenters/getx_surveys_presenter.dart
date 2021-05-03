@@ -10,9 +10,11 @@ class GetxSurveysPresenter implements SurveysPresenter{
   final LoadSurveys loadSurveys;
   final _isLoading = true.obs;
   final _surveys = Rx<List<SurveyViewModel>>();
+  final _navigateTo = RxString();
 
   Stream<bool> get isLoadingStream => _isLoading.stream;
   Stream<List<SurveyViewModel>> get surveysStream => _surveys.stream;
+  Stream<String> get navigateToStream => _navigateTo.stream;
 
   GetxSurveysPresenter({@required this.loadSurveys});
 
@@ -34,5 +36,8 @@ class GetxSurveysPresenter implements SurveysPresenter{
     } finally {
       _isLoading.value = false;
     }
+  }
+  void goToSurveyResult(String surveyId){
+    _navigateTo.value = '/survey_result/$surveyId';
   }
 }

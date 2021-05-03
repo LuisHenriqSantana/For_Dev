@@ -13,20 +13,26 @@ void main() {
   SurveysPresenterSpy presenter;
   StreamController<bool> isLoadingController;
   StreamController<List<SurveyViewModel>> surveysController;
+  StreamController<String> navigateToController;
 
   void initStreams() {
     isLoadingController = StreamController<bool>();
     surveysController = StreamController<List<SurveyViewModel>>();
+    navigateToController = StreamController<String>();
   }
 
   void mockStreams() {
-    when(presenter.isLoadingStream).thenAnswer((_) => isLoadingController.stream);
+    when(presenter.isLoadingStream)
+        .thenAnswer((_) => isLoadingController.stream);
     when(presenter.surveysStream).thenAnswer((_) => surveysController.stream);
+    when(presenter.navigateToStream)
+        .thenAnswer((_) => navigateToController.stream);
   }
 
   void closeStreams() {
     isLoadingController.close();
     surveysController.close();
+    navigateToController.close();
   }
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -36,23 +42,30 @@ void main() {
 
     final surveysPage = GetMaterialApp(
       initialRoute: '/surveys',
-      getPages: [GetPage(name: '/surveys', page: () => SurveysPage(presenter))],
+      getPages: [
+        GetPage(name: '/surveys', page: () => SurveysPage(presenter)),
+        GetPage(
+            name: '/any_route', page: () => Scaffold(body: Text('fake page'))),
+      ],
     );
     await tester.pumpWidget(surveysPage);
   }
-  List<SurveyViewModel> makeSurveys() => [
-    SurveyViewModel(id: '1', question: 'Question 1', date: 'Date 1', didAnswer: true),
-    SurveyViewModel(id: '2', question: 'Question 2', date: 'Date 2', didAnswer: true),
-  ];
 
-  tearDown((){
+  List<SurveyViewModel> makeSurveys() => [
+        SurveyViewModel(
+            id: '1', question: 'Question 1', date: 'Date 1', didAnswer: true),
+        SurveyViewModel(
+            id: '2', question: 'Question 2', date: 'Date 2', didAnswer: true),
+      ];
+
+  tearDown(() {
     closeStreams();
   });
 
   testWidgets('Should call surveysStream on page load',
       (WidgetTester tester) async {
     await loadPage(tester);
-    
+
     verify(presenter.loadData()).called(1);
   });
 
@@ -80,38 +93,66 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
-  testWidgets('Should present error if surveysStream fails', (WidgetTester tester) async {
-        await loadPage(tester);
+  testWidgets('Should present error if surveysStream fails',
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        surveysController.addError(UIError.unexpected.description);
-        await tester.pump();
+    surveysController.addError(UIError.unexpected.description);
+    await tester.pump();
 
-        expect(find.text('Algo errado aconteceu. Tente novamente em breve'), findsOneWidget);
-        expect(find.text('Recarregar'), findsOneWidget);
-        expect(find.text('Question 1'), findsNothing);
-      });
+    expect(find.text('Algo errado aconteceu. Tente novamente em breve'),
+        findsOneWidget);
+    expect(find.text('Recarregar'), findsOneWidget);
+    expect(find.text('Question 1'), findsNothing);
+  });
 
-  testWidgets('Should present list if surveysStream succeeds', (WidgetTester tester) async {
-        await loadPage(tester);
+  testWidgets('Should present list if surveysStream succeeds',
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        surveysController.add(makeSurveys());
-        await tester.pump();
+    surveysController.add(makeSurveys());
+    await tester.pump();
 
-        expect(find.text('Algo errado aconteceu. Tente novamente em breve'), findsNothing);
-        expect(find.text('Recarregar'), findsNothing);
-        expect(find.text('Question 1'), findsWidgets);
-        expect(find.text('Question 2'), findsWidgets);
-        expect(find.text('Date 1'), findsWidgets);
-        expect(find.text('Date 2'), findsWidgets);
-      });
+    expect(find.text('Algo errado aconteceu. Tente novamente em breve'),
+        findsNothing);
+    expect(find.text('Recarregar'), findsNothing);
+    expect(find.text('Question 1'), findsWidgets);
+    expect(find.text('Question 2'), findsWidgets);
+    expect(find.text('Date 1'), findsWidgets);
+    expect(find.text('Date 2'), findsWidgets);
+  });
 
-  testWidgets('Should call surveysStream on reload button click', (WidgetTester tester) async {
-        await loadPage(tester);
+  testWidgets('Should call surveysStream on reload button click',
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
-        surveysController.addError(UIError.unexpected.description);
-        await tester.pump();
-        await tester.tap(find.text('Recarregar'));
+    surveysController.addError(UIError.unexpected.description);
+    await tester.pump();
+    await tester.tap(find.text('Recarregar'));
 
-        verify(presenter.loadData()).called(2);
+    verify(presenter.loadData()).called(2);
+  });
+
+  testWidgets('Should call goToSurveyResult on survey click',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    surveysController.add(makeSurveys());
+    await tester.pump();
+
+    await tester.tap(find.text('Question 1'));
+    await tester.pump();
+
+    verify(presenter.goToSurveyResult('1')).called(1);
+  });
+
+  testWidgets('Should change page', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    navigateToController.add('/any_route');
+    await tester.pumpAndSettle();
+
+    expect(Get.currentRoute, '/any_route');
+    expect(find.text('fake page'), findsOneWidget);
   });
 }
