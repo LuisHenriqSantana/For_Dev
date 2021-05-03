@@ -4,10 +4,14 @@ import 'package:meta/meta.dart';
 
 class AuthorizeHttpClientDecorator implements HttpClient {
   final FetchSecureCacheStorage fetchSecureCacheStorage;
+  final DeleteSecureCacheStorage deleteSecureCacheStorage;
   final HttpClient decoratee;
 
-  AuthorizeHttpClientDecorator(
-      {@required this.fetchSecureCacheStorage, @required this.decoratee});
+  AuthorizeHttpClientDecorator({
+    @required this.fetchSecureCacheStorage,
+    @required this.deleteSecureCacheStorage,
+    @required this.decoratee,
+  });
 
   Future<dynamic> request({
     @required String url,
@@ -24,6 +28,7 @@ class AuthorizeHttpClientDecorator implements HttpClient {
     } on HttpError {
       rethrow;
     } catch (error) {
+      await deleteSecureCacheStorage.deleteSecure('token');
       throw HttpError.forbidden;
     }
   }
