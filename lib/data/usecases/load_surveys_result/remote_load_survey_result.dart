@@ -5,7 +5,7 @@ import 'package:for_dev/domain/helpers/helpers.dart';
 import 'package:for_dev/domain/usecases/usecases.dart';
 import 'package:meta/meta.dart';
 
-class RemoteLoadSurveyResult implements LoadSurveysResult {
+class RemoteLoadSurveyResult implements LoadSurveyResult {
   final String url;
   final HttpClient httpClient;
 
