@@ -28,8 +28,8 @@ class SurveysPage extends StatelessWidget {
           }
         });
 
-        presenter.navigateToStream.listen((page){
-          if(page?.isNotEmpty == true){
+        presenter.navigateToStream.listen((page) {
+          if (page?.isNotEmpty == true) {
             Get.toNamed(page);
           }
         });
@@ -46,7 +46,7 @@ class SurveysPage extends StatelessWidget {
               }
               if (snapshot.hasData) {
                 return Provider(
-                    create: (_)=> presenter,
+                    create: (_) => presenter,
                     child: SurveyItems(snapshot.data));
               }
               return SizedBox(height: 0);
