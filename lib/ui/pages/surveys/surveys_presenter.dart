@@ -2,6 +2,7 @@ import 'package:for_dev/ui/pages/pages.dart';
 
 abstract class SurveysPresenter{
   Stream<bool> get isLoadingStream;
+  Stream<bool> get isSessionExpiredStream;
   Stream<List<SurveyViewModel>> get surveysStream;
   Stream<String> get navigateToStream;
 
