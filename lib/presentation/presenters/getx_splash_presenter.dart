@@ -3,7 +3,7 @@ import 'package:for_dev/ui/pages/pages.dart';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 
-class GetxSplashPresenter implements SplashPresenter{
+class GetxSplashPresenter extends GetxController implements SplashPresenter{
   final LoadCurrentAccount loadCurrentAccount;
   var _navigateTo = RxString();
 

@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 
-class GetxSurveysPresenter with SessionManager, LoadingManager implements SurveysPresenter {
+class GetxSurveysPresenter extends GetxController with SessionManager, LoadingManager implements SurveysPresenter {
   final LoadSurveys loadSurveys;
   final _surveys = Rx<List<SurveyViewModel>>();
   final _navigateTo = RxString();

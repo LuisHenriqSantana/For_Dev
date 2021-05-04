@@ -5,7 +5,7 @@ import 'package:for_dev/ui/pages/pages.dart';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 
-class GetxSurveyResultPresenter implements SurveyResultPresenter {
+class GetxSurveyResultPresenter extends GetxController implements SurveyResultPresenter {
   final LoadSurveyResult loadSurveyResult;
   final String surveyId;
   final _isLoading = true.obs;
