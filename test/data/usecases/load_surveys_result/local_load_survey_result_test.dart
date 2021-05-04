@@ -15,20 +15,21 @@ void main() {
     Map data;
     String surveyId;
 
-    Map mockValidData() =>
-        {
+    Map mockValidData() => {
           'surveyId': faker.guid.guid(),
           'question': faker.lorem.sentence(),
-          'answers': [{
-            'image': faker.internet.httpUrl(),
-            'answer': faker.lorem.sentence(),
-            'isCurrentAnswer': 'true',
-            'percent': '40'
-          }, {
-            'answer': faker.lorem.sentence(),
-            'isCurrentAnswer': 'false',
-            'percent': '60'
-          }
+          'answers': [
+            {
+              'image': faker.internet.httpUrl(),
+              'answer': faker.lorem.sentence(),
+              'isCurrentAnswer': 'true',
+              'percent': '40'
+            },
+            {
+              'answer': faker.lorem.sentence(),
+              'isCurrentAnswer': 'false',
+              'percent': '60'
+            }
           ],
         };
     PostExpectation mockFetchCall() => when(cacheStorage.fetch(any));
@@ -58,23 +59,25 @@ void main() {
     test('Should return surveyResult on success', () async {
       final surveyResult = await sut.loadBySurvey(surveyId: surveyId);
 
-      expect(surveyResult, SurveyResultEntity(
-        surveyId: data['surveyId'],
-        question: data['question'],
-        answers: [
-          SurveyAnswerEntity(
-            image: data['answers'][0]['image'],
-            answer: data['answers'][0]['answer'],
-            isCurrentAnswer: true,
-            percent: 40,
-          ),
-          SurveyAnswerEntity(
-            answer: data['answers'][0]['answer'],
-            isCurrentAnswer: false,
-            percent: 60,
-          ),
-        ],
-      ));
+      expect(
+          surveyResult,
+          SurveyResultEntity(
+            surveyId: data['surveyId'],
+            question: data['question'],
+            answers: [
+              SurveyAnswerEntity(
+                image: data['answers'][0]['image'],
+                answer: data['answers'][0]['answer'],
+                isCurrentAnswer: true,
+                percent: 40,
+              ),
+              SurveyAnswerEntity(
+                answer: data['answers'][0]['answer'],
+                isCurrentAnswer: false,
+                percent: 60,
+              ),
+            ],
+          ));
     });
 
     test('Should throw UnexpectedError if cache is empty', () async {
@@ -92,18 +95,18 @@ void main() {
     });
 
     test('Should throw UnexpectedError if cache is invalid', () async {
-      mockFetch(
+      mockFetch({
+        'surveyId': faker.guid.guid(),
+        'question': faker.lorem.sentence(),
+        'answers': [
           {
-            'surveyId': faker.guid.guid(),
-            'question': faker.lorem.sentence(),
-            'answers': [{
-              'image': faker.internet.httpUrl(),
-              'answer': faker.lorem.sentence(),
-              'isCurrentAnswer': 'invalid bool',
-              'percent': 'invalid int'
-            }
-            ],
-          });
+            'image': faker.internet.httpUrl(),
+            'answer': faker.lorem.sentence(),
+            'isCurrentAnswer': 'invalid bool',
+            'percent': 'invalid int'
+          }
+        ],
+      });
       final future = sut.loadBySurvey(surveyId: surveyId);
 
       expect(future, throwsA(DomainError.unexpected));
@@ -127,27 +130,27 @@ void main() {
     });
   });
 
-
-
   group('validate', () {
     LocalLoadSurveyResult sut;
-    CacheStorageSpy cacheStorage; Map data;
+    CacheStorageSpy cacheStorage;
+    Map data;
     String surveyId;
 
-    Map mockValidData() =>
-        {
+    Map mockValidData() => {
           'surveyId': faker.guid.guid(),
           'question': faker.lorem.sentence(),
-          'answers': [{
-            'image': faker.internet.httpUrl(),
-            'answer': faker.lorem.sentence(),
-            'isCurrentAnswer': 'true',
-            'percent': '40'
-          }, {
-            'answer': faker.lorem.sentence(),
-            'isCurrentAnswer': 'false',
-            'percent': '60'
-          }
+          'answers': [
+            {
+              'image': faker.internet.httpUrl(),
+              'answer': faker.lorem.sentence(),
+              'isCurrentAnswer': 'true',
+              'percent': '40'
+            },
+            {
+              'answer': faker.lorem.sentence(),
+              'isCurrentAnswer': 'false',
+              'percent': '60'
+            }
           ],
         };
     PostExpectation mockFetchCall() => when(cacheStorage.fetch(any));
@@ -175,18 +178,18 @@ void main() {
     });
 
     test('Should delete cache if it is invalid', () async {
-      mockFetch(
+      mockFetch({
+        'surveyId': faker.guid.guid(),
+        'question': faker.lorem.sentence(),
+        'answers': [
           {
-            'surveyId': faker.guid.guid(),
-            'question': faker.lorem.sentence(),
-            'answers': [{
-              'image': faker.internet.httpUrl(),
-              'answer': faker.lorem.sentence(),
-              'isCurrentAnswer': 'invalid bool',
-              'percent': 'invalid int'
-            }
-            ],
-          });
+            'image': faker.internet.httpUrl(),
+            'answer': faker.lorem.sentence(),
+            'isCurrentAnswer': 'invalid bool',
+            'percent': 'invalid int'
+          }
+        ],
+      });
 
       await sut.validate(surveyId);
 
@@ -194,11 +197,7 @@ void main() {
     });
 
     test('Should delete cache if it is incomplete', () async {
-      mockFetch(
-        {
-          'surveyId': faker.guid.guid()
-        }
-      );
+      mockFetch({'surveyId': faker.guid.guid()});
 
       await sut.validate(surveyId);
 
@@ -213,5 +212,72 @@ void main() {
       verify(cacheStorage.delete('survey_result/$surveyId')).called(1);
     });
   });
+  group('save', () {
+    LocalLoadSurveyResult sut;
+    CacheStorageSpy cacheStorage;
+    SurveyResultEntity surveyResult;
+    String surveyId;
 
+    PostExpectation mockSaveCall() =>
+        when(cacheStorage.save(key: anyNamed('key'), value: anyNamed('value')));
+
+    void mockSaveError() => mockSaveCall().thenThrow(Exception());
+
+    SurveyResultEntity mockSurveyResult() => SurveyResultEntity(
+            surveyId: faker.guid.guid(),
+            question: faker.lorem.sentence(),
+            answers: [
+              SurveyAnswerEntity(
+                  image: faker.internet.httpUrl(),
+                  answer: faker.lorem.sentence(),
+                  isCurrentAnswer: true,
+                  percent: 40),
+              SurveyAnswerEntity(
+                  answer: faker.lorem.sentence(),
+                  isCurrentAnswer: false,
+                  percent: 60),
+            ]);
+
+    setUp(() {
+      surveyId = faker.guid.guid();
+      cacheStorage = CacheStorageSpy();
+      sut = LocalLoadSurveyResult(
+        cacheStorage: cacheStorage,
+      );
+      surveyResult = mockSurveyResult();
+    });
+
+    test('Should call cacheStorage with correct key', () async {
+      Map json = {
+        'surveyId': surveyResult.surveyId,
+        'question': surveyResult.question,
+        'answers': [
+          {
+            'image': surveyResult.answers[0].image,
+            'answer': surveyResult.answers[0].answer,
+            'percent': '40',
+            'isCurrentAnswer': 'true',
+          },
+          {
+            'image': null,
+            'answer': surveyResult.answers[1].answer,
+            'percent': '60',
+            'isCurrentAnswer': 'false',
+          }
+        ]
+      };
+      await sut.save(surveyId: surveyId, surveyResult: surveyResult);
+
+      verify(cacheStorage.save(key: 'survey_result/$surveyId', value: json))
+          .called(1);
+    });
+
+    test('Should throw UnexpectedError if save throws', () async {
+      mockSaveError();
+
+      final future = sut.save(surveyId: surveyId, surveyResult: surveyResult);
+
+      expect(future, throwsA(DomainError.unexpected));
+    });
+  });
 }
