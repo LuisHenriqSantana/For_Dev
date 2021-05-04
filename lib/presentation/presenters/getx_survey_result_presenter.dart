@@ -9,7 +9,7 @@ class GetxSurveyResultPresenter implements SurveyResultPresenter {
   final LoadSurveyResult loadSurveyResult;
   final String surveyId;
   final _isLoading = true.obs;
-  final _isSessionExpired  = RxBool();
+  final _isSessionExpired = RxBool();
   final _surveyResult = Rx<SurveyResultViewModel>();
 
   Stream<bool> get isLoadingStream => _isLoading.stream;
@@ -29,15 +29,20 @@ class GetxSurveyResultPresenter implements SurveyResultPresenter {
       _surveyResult.value = SurveyResultViewModel(
         surveyId: surveyResult.surveyId,
         question: surveyResult.question,
-        answers: surveyResult.answers.map((answer) => SurveyAnswerViewModel(
-          image: answer.image,
-          answer: answer.answer,
-          percent: '${answer.percent}',
-          isCurrentAnswer: answer.isCurrentAnswer
-        )).toList(),
+        answers: surveyResult.answers
+            .map((answer) => SurveyAnswerViewModel(
+                image: answer.image,
+                answer: answer.answer,
+                percent: '${answer.percent}',
+                isCurrentAnswer: answer.isCurrentAnswer))
+            .toList(),
       );
-    } on DomainError {
-      _surveyResult.subject.addError(UIError.unexpected.description);
+    } on DomainError catch (error) {
+      if (error == DomainError.accessDenied) {
+        _isSessionExpired.value = true;
+      } else {
+        _surveyResult.subject.addError(UIError.unexpected.description);
+      }
     } finally {
       _isLoading.value = false;
     }
