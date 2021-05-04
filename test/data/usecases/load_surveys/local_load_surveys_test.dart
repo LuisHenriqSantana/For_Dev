@@ -9,6 +9,7 @@ import 'package:test/test.dart';
 class CacheStorageSpy extends Mock implements CacheStorage {}
 
 void main() {
+
   group('load', () {
     LocalLoadSurveys sut;
     CacheStorageSpy cacheStorage;
@@ -109,7 +110,7 @@ void main() {
       expect(future, throwsA(DomainError.unexpected));
     });
 
-    test('Should throw UnexpectedError if cache is empty', () async {
+    test('Should throw UnexpectedError if cache throws', () async {
       mockFetchError();
       final future = sut.load();
 
