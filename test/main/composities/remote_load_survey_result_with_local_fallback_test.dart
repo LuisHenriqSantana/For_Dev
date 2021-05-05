@@ -4,24 +4,30 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:meta/meta.dart';
 
-class RemoteLoadSurveyResultWithLocalFallback{
+class RemoteLoadSurveyResultWithLocalFallback {
   final RemoteLoadSurveyResult remote;
 
   RemoteLoadSurveyResultWithLocalFallback({@required this.remote});
 
-  Future<void> loadBySurvey({String surveyId}) async{
+  Future<void> loadBySurvey({String surveyId}) async {
     await remote.loadBySurvey(surveyId: surveyId);
   }
 }
 
-class RemoteLoadSurveyResultSpy extends Mock implements RemoteLoadSurveyResult{}
+class RemoteLoadSurveyResultSpy extends Mock implements RemoteLoadSurveyResult {
+}
 
-void main(){
-  test('Shoul call remote LoadBySurvey', ()async{
-    final surveyId = faker.guid.guid();
-    final remote = RemoteLoadSurveyResultSpy();
-    final sut = RemoteLoadSurveyResultWithLocalFallback(remote: remote);
+void main() {
+  RemoteLoadSurveyResultWithLocalFallback sut;
+  RemoteLoadSurveyResultSpy remote;
+  String surveyId;
 
+  setUp(() {
+    surveyId = faker.guid.guid();
+    remote = RemoteLoadSurveyResultSpy();
+    sut = RemoteLoadSurveyResultWithLocalFallback(remote: remote);
+  });
+  test('Shoul call remote LoadBySurvey', () async {
     await sut.loadBySurvey(surveyId: surveyId);
 
     verify(remote.loadBySurvey(surveyId: surveyId)).called(1);
