@@ -2,39 +2,16 @@ import 'package:faker/faker.dart';
 import 'package:for_dev/data/usecases/usecases.dart';
 import 'package:for_dev/domain/entities/entities.dart';
 import 'package:for_dev/domain/helpers/helpers.dart';
-import 'package:for_dev/domain/usecases/usecases.dart';
+import 'package:for_dev/main/composities/composities.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:meta/meta.dart';
-
-class RemoteLoadSurveyResultWithLocalFallback implements LoadSurveyResult {
-  final RemoteLoadSurveyResult remote;
-  final LocalLoadSurveyResult local;
-
-  RemoteLoadSurveyResultWithLocalFallback(
-      {@required this.remote, @required this.local});
-
-  Future<SurveyResultEntity> loadBySurvey({String surveyId}) async {
-    try {
-      final surveyResult = await remote.loadBySurvey(surveyId: surveyId);
-      await local.save(surveyId: surveyId, surveyResult: surveyResult);
-      return surveyResult;
-    } catch (error) {
-      if (error == DomainError.accessDenied) {
-        rethrow;
-      }
-      await local.validate(surveyId);
-      return await local.loadBySurvey(surveyId: surveyId);
-    }
-  }
-}
 
 class RemoteLoadSurveyResultSpy extends Mock implements RemoteLoadSurveyResult {
 }
 
 class LocalLoadSurveyResultSpy extends Mock implements LocalLoadSurveyResult {}
 
-void main() { 
+void main() {
   RemoteLoadSurveyResultWithLocalFallback sut;
   RemoteLoadSurveyResultSpy remote;
   LocalLoadSurveyResultSpy local;
@@ -63,11 +40,12 @@ void main() {
   void mockRemoteLoadError(DomainError error) =>
       mockRemoteLoadCall().thenThrow(error);
 
-  PostExpectation mockLocalLoadCall()=> when(local.loadBySurvey(surveyId: anyNamed('surveyId')));
+  PostExpectation mockLocalLoadCall() =>
+      when(local.loadBySurvey(surveyId: anyNamed('surveyId')));
 
-  void mockLocalLoad(){
+  void mockLocalLoad() {
     localResult = mockSurveyResult();
-    mockLocalLoadCall().thenAnswer((_) async=> localResult);
+    mockLocalLoadCall().thenAnswer((_) async => localResult);
   }
 
   void mockLocalLoadError() =>
