@@ -32,11 +32,13 @@ void main() {
 
   void mockLoadSurveys(List<SurveyEntity> data) {
     surveys = data;
-  mockLoadSurveysCall().thenAnswer((_) async => surveys);
+    mockLoadSurveysCall().thenAnswer((_) async => surveys);
   }
 
-  void mockLoadSurveysError() => mockLoadSurveysCall().thenThrow(DomainError.unexpected);
-  void mockAccessDeniedError() => mockLoadSurveysCall().thenThrow(DomainError.accessDenied);
+  void mockLoadSurveysError() =>
+      mockLoadSurveysCall().thenThrow(DomainError.unexpected);
+  void mockAccessDeniedError() =>
+      mockLoadSurveysCall().thenThrow(DomainError.accessDenied);
 
   setUp(() {
     loadSurveys = LoadSurveysSpy();
@@ -71,7 +73,9 @@ void main() {
   test('Should emit correct events on failure', () async {
     mockLoadSurveysError();
     expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
-    sut.surveysStream.listen(null, onError: expectAsync1((error) => expect(error, UIError.unexpected.description)));
+    sut.surveysStream.listen(null,
+        onError: expectAsync1(
+            (error) => expect(error, UIError.unexpected.description)));
 
     await sut.loadData();
   });
@@ -85,8 +89,14 @@ void main() {
   });
 
   test('Should go to SurveyResultPage on survey click ', () async {
-    sut.navigateToStream.listen(expectAsync1((page) => expect(page, '/survey_result/any_route')));
+    expectLater(
+        sut.navigateToStream,
+        emitsInOrder([
+          '/survey_result/any_route',
+          '/survey_result/any_route',
+        ]));
 
+    sut.goToSurveyResult('any_route');
     sut.goToSurveyResult('any_route');
   });
 }
