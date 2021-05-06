@@ -8,6 +8,9 @@ import 'package:for_dev/ui/pages/pages.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
+import '../../mocks/mocks.dart';
+
+
 class LoadSurveyResultSpy extends Mock implements LoadSurveyResult {}
 
 class SaveSurveyResultSpy extends Mock implements SaveSurveyResult {}
@@ -20,23 +23,6 @@ void main() {
   SurveyResultEntity saveResult;
   String surveyId;
   String answer;
-
-  SurveyResultEntity mockValidData() => SurveyResultEntity(
-          surveyId: faker.guid.guid(),
-          question: faker.lorem.sentence(),
-          answers: [
-            SurveyAnswerEntity(
-              image: faker.internet.httpUrl(),
-              answer: faker.lorem.sentence(),
-              isCurrentAnswer: faker.randomGenerator.boolean(),
-              percent: faker.randomGenerator.integer(100),
-            ),
-            SurveyAnswerEntity(
-              answer: faker.lorem.sentence(),
-              isCurrentAnswer: faker.randomGenerator.boolean(),
-              percent: faker.randomGenerator.integer(100),
-            ),
-          ]);
 
   PostExpectation mockLoadSurveyResultCall() =>
       when(loadSurveyResult.loadBySurvey(surveyId: anyNamed('surveyId')));
@@ -89,8 +75,8 @@ void main() {
       saveSurveyResult: saveSurveyResult,
       surveyId: surveyId,
     );
-    mockLoadSurveyResult(mockValidData());
-    mockSaveSurveyResult(mockValidData());
+    mockLoadSurveyResult(FakeSurveyResultFactory.makeEntity());
+    mockSaveSurveyResult(FakeSurveyResultFactory.makeEntity());
   });
   group('loadData', () {
     test('Should call LoadSurveyResult on loadData', () async {
