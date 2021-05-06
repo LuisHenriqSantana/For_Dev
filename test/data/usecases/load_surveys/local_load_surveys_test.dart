@@ -16,19 +16,19 @@ void main() {
     List<Map> data;
 
     List<Map> mockValidData() => [
-          {
-            'id': faker.guid.guid(),
-            'question': faker.randomGenerator.string(10),
-            'date': '2020-07-20T00:00:00Z',
-            'didAnswer': 'false',
-          },
-          {
-            'id': faker.guid.guid(),
-            'question': faker.randomGenerator.string(10),
-            'date': '2019-02-02T00:00:00Z',
-            'didAnswer': 'true',
-          }
-        ];
+      {
+        'id': faker.guid.guid(),
+        'question': faker.randomGenerator.string(10),
+        'date': '2020-07-20T00:00:00Z',
+        'didAnswer': 'false',
+      },
+      {
+        'id': faker.guid.guid(),
+        'question': faker.randomGenerator.string(10),
+        'date': '2019-02-02T00:00:00Z',
+        'didAnswer': 'true',
+      }
+    ];
 
     PostExpectation mockFetchCall() => when(cacheStorage.fetch(any));
 
@@ -124,19 +124,19 @@ void main() {
     List<Map> data;
 
     List<Map> mockValidData() => [
-          {
-            'id': faker.guid.guid(),
-            'question': faker.randomGenerator.string(10),
-            'date': '2020-07-20T00:00:00Z',
-            'didAnswer': 'false',
-          },
-          {
-            'id': faker.guid.guid(),
-            'question': faker.randomGenerator.string(10),
-            'date': '2019-02-02T00:00:00Z',
-            'didAnswer': 'true',
-          }
-        ];
+      {
+        'id': faker.guid.guid(),
+        'question': faker.randomGenerator.string(10),
+        'date': '2020-07-20T00:00:00Z',
+        'didAnswer': 'false',
+      },
+      {
+        'id': faker.guid.guid(),
+        'question': faker.randomGenerator.string(10),
+        'date': '2019-02-02T00:00:00Z',
+        'didAnswer': 'true',
+      }
+    ];
 
     PostExpectation mockFetchCall() => when(cacheStorage.fetch(any));
 
@@ -209,19 +209,19 @@ void main() {
     void mockSaveError() => mockSaveCall().thenThrow(Exception());
 
     List<SurveyEntity> mockSurveys() => [
-          SurveyEntity(
-            id: faker.guid.guid(),
-            question: faker.randomGenerator.string(10),
-            dateTime: DateTime.utc(2020, 2, 2),
-            didAnswer: true,
-          ),
-          SurveyEntity(
-            id: faker.guid.guid(),
-            question: faker.randomGenerator.string(10),
-            dateTime: DateTime.utc(2018, 12, 20),
-            didAnswer: false,
-          )
-        ];
+      SurveyEntity(
+        id: faker.guid.guid(),
+        question: faker.randomGenerator.string(10),
+        dateTime: DateTime.utc(2020, 2, 2),
+        didAnswer: true,
+      ),
+      SurveyEntity(
+        id: faker.guid.guid(),
+        question: faker.randomGenerator.string(10),
+        dateTime: DateTime.utc(2018, 12, 20),
+        didAnswer: false,
+      )
+    ];
 
     setUp(() {
       cacheStorage = CacheStorageSpy();
