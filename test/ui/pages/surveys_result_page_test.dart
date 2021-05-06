@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:for_dev/ui/helpers/helpers.dart';
 import 'package:for_dev/ui/pages/pages.dart';
 import 'package:for_dev/ui/pages/survey_result/components/components.dart';
-import 'package:get/get.dart';
 import 'package:image_test_utils/image_test_utils.dart';
 import 'package:mockito/mockito.dart';
+import '../helpers/helpers.dart';
 
 class SurveyResultPresenterSpy extends Mock implements SurveyResultPresenter {}
 
@@ -44,17 +44,10 @@ void main() {
     presenter = SurveyResultPresenterSpy();
     initStreams();
     mockStreams();
-    final surveysPage = GetMaterialApp(
-      initialRoute: '/survey_result/any_survey_id',
-      getPages: [
-        GetPage(
-            name: '/survey_result/:survey_id',
-            page: () => SurveyResultPage(presenter)),
-        GetPage(name: '/login', page: () => Scaffold(body: Text('fake login'))),
-      ],
-    );
     await provideMockedNetworkImages(() async {
-      await tester.pumpWidget(surveysPage);
+      await tester.pumpWidget(makePage(
+          path: '/survey_result/any_survey_id',
+          page: () => SurveyResultPage(presenter)));
     });
   }
 
@@ -165,7 +158,7 @@ void main() {
     isSessionExpiredController.add(true);
     await tester.pumpAndSettle();
 
-    expect(Get.currentRoute, '/login');
+    expect(currentRoute, '/login');
     expect(find.text('fake login'), findsOneWidget);
   });
 
@@ -174,11 +167,11 @@ void main() {
 
     isSessionExpiredController.add(false);
     await tester.pumpAndSettle();
-    expect(Get.currentRoute, '/survey_result/any_survey_id');
+    expect(currentRoute, '/survey_result/any_survey_id');
 
     isSessionExpiredController.add(null);
     await tester.pumpAndSettle();
-    expect(Get.currentRoute, '/survey_result/any_survey_id');
+    expect(currentRoute, '/survey_result/any_survey_id');
   });
 
   testWidgets('Should call save on list item click',
