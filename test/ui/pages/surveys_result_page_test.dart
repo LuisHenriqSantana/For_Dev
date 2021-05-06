@@ -7,6 +7,7 @@ import 'package:for_dev/ui/pages/pages.dart';
 import 'package:for_dev/ui/pages/survey_result/components/components.dart';
 import 'package:image_test_utils/image_test_utils.dart';
 import 'package:mockito/mockito.dart';
+import '../../mocks/mocks.dart';
 import '../helpers/helpers.dart';
 
 class SurveyResultPresenterSpy extends Mock implements SurveyResultPresenter {}
@@ -50,25 +51,6 @@ void main() {
           page: () => SurveyResultPage(presenter)));
     });
   }
-
-  SurveyResultViewModel makeSurveyResult() => SurveyResultViewModel(
-        surveyId: 'Any id',
-        question: 'Question',
-        answers: [
-          SurveyAnswerViewModel(
-            image: 'Image 0',
-            answer: 'Answer 0',
-            isCurrentAnswer: true,
-            percent: '60%',
-          ),
-          SurveyAnswerViewModel(
-            answer: 'Answer 1',
-            isCurrentAnswer: false,
-            percent: '40%',
-          ),
-        ],
-      );
-
   tearDown(() {
     closeStreams();
   });
@@ -132,7 +114,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    surveyResultController.add(makeSurveyResult());
+    surveyResultController.add(FakeSurveyResultFactory.makeViewModel());
     await provideMockedNetworkImages(() async {
       await tester.pump();
     });
@@ -178,7 +160,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    surveyResultController.add(makeSurveyResult());
+    surveyResultController.add(FakeSurveyResultFactory.makeViewModel());
     await provideMockedNetworkImages(() async {
       await tester.pump();
     });
@@ -191,7 +173,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    surveyResultController.add(makeSurveyResult());
+    surveyResultController.add(FakeSurveyResultFactory.makeViewModel());
     await provideMockedNetworkImages(() async {
       await tester.pump();
     });
